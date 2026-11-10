@@ -1,0 +1,15 @@
+target/
+.git/
+.github/
+.vscode/
+.idea/
+**/.DS_Store
+ejemplo/
+*.zip
+*.stl
+*.3mf
+*.iml
+.env
+.env.*
+Dockerfile
+docker-compose.yml
