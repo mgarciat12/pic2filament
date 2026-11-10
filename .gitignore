@@ -28,8 +28,8 @@ target/
 *.3mf
 ejemplo/salida/*
 !ejemplo/salida/.gitkeep
-!ejemplo/salida/vista-previa.png
-!ejemplo/salida/pic2filament.txt
+!ejemplo/salida/*.png
+!ejemplo/salida/*.txt
 
 ### STS ###
 .apt_generated

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Lectura y comprobaciones de un STL binario para las pruebas. */
@@ -51,26 +52,27 @@ public final class StlChecks {
 
     /**
      * Comprueba que la malla es estanca y orientada: cada arista no dirigida aparece en exactamente
-     * dos triángulos, y en sentidos opuestos.
+     * dos triángulos, y en sentidos opuestos (los vértices se identifican por sus coordenadas).
      */
     public static void assertWatertight(Stl stl) {
-        Map<String, Integer> directed = new HashMap<>();
+        Map<List<Float>, Integer> ids = new HashMap<>();
         float[] v = stl.vertices();
+        int[] tri = new int[3];
+        Map<Long, Integer> directed = new HashMap<>(stl.triangles() * 4);
         for (int t = 0; t < stl.triangles(); t++) {
-            String[] p = new String[3];
             for (int k = 0; k < 3; k++) {
                 int o = t * 9 + k * 3;
-                p[k] = v[o] + "," + v[o + 1] + "," + v[o + 2];
+                tri[k] = ids.computeIfAbsent(List.of(v[o], v[o + 1], v[o + 2]), key -> ids.size());
             }
+            assertThat(tri[0] != tri[1] && tri[1] != tri[2] && tri[0] != tri[2]).as("triángulo degenerado").isTrue();
             for (int k = 0; k < 3; k++) {
-                String e = p[k] + ">" + p[(k + 1) % 3];
-                directed.merge(e, 1, Integer::sum);
+                directed.merge(((long) tri[k] << 32) | tri[(k + 1) % 3], 1, Integer::sum);
             }
         }
-        for (Map.Entry<String, Integer> e : directed.entrySet()) {
-            assertThat(e.getValue()).as("arista dirigida repetida %s", e.getKey()).isEqualTo(1);
-            String[] ab = e.getKey().split(">");
-            assertThat(directed.get(ab[1] + ">" + ab[0])).as("arista sin pareja %s", e.getKey()).isEqualTo(1);
+        for (Map.Entry<Long, Integer> e : directed.entrySet()) {
+            long a = e.getKey() >>> 32, b = e.getKey() & 0xffffffffL;
+            assertThat(e.getValue()).as("arista dirigida repetida %d>%d", a, b).isEqualTo(1);
+            assertThat(directed.get((b << 32) | a)).as("arista %d>%d sin pareja", a, b).isEqualTo(1);
         }
     }
 
