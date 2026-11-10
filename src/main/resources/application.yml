@@ -1,0 +1,67 @@
+# Configuración de pic2filament. Todos los valores se pueden sobrescribir con variables de entorno.
+spring:
+  application:
+    name: pic2filament
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE:15MB}
+      max-request-size: ${MAX_REQUEST_SIZE:20MB}
+  thymeleaf:
+    cache: true
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 7d
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: text/html,text/css,application/javascript,application/json,text/plain
+  tomcat:
+    # Permite responder con un error claro cuando la subida supera el límite.
+    max-swallow-size: 100MB
+  error:
+    include-message: always
+    include-stacktrace: never
+    whitelabel:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+pic2filament:
+  # Tamaño máximo de la imagen subida.
+  max-upload-size: ${MAX_UPLOAD_SIZE:15MB}
+  # Límite de vértices por lado de la rejilla del relieve.
+  max-grid: ${MAX_GRID:600}
+  # Límite de megapíxeles de la imagen decodificada (protege frente a "bombas" de descompresión).
+  max-image-megapixels: ${MAX_IMAGE_MEGAPIXELS:60}
+  # Capas totales máximas admitidas.
+  max-total-layers: ${MAX_TOTAL_LAYERS:300}
+  # Directorio de ficheros temporales (imágenes subidas).
+  temp-dir: ${TEMP_DIR:${java.io.tmpdir}/pic2filament}
+  # Tiempo sin uso tras el cual se borra un trabajo.
+  job-ttl: ${JOB_TTL:2h}
+  # Número máximo de trabajos simultáneos (los más antiguos se borran).
+  max-jobs: ${MAX_JOBS:200}
+  # Conversiones simultáneas como máximo (0 = número de procesadores).
+  max-concurrent: ${MAX_CONCURRENT:0}
+  # Fichero YAML externo con la biblioteca de filamentos (vacío = la incluida).
+  filaments-file: ${FILAMENTS_FILE:}
+
+logging:
+  level:
+    com.pic2filament: INFO

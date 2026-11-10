@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="cabecera(titulo)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title th:text="${titulo}">pic2filament</title>
+    <link rel="icon" th:href="@{/favicon.svg}" type="image/svg+xml">
+    <script>
+        // Aplica el tema guardado (o el del sistema) antes de pintar, para evitar parpadeos.
+        (function () {
+            var t = null;
+            try { t = localStorage.getItem('pic2filament-tema'); } catch (e) { }
+            if (!t) { t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+            document.documentElement.setAttribute('data-bs-theme', t);
+        })();
+    </script>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<nav th:fragment="barra" class="navbar navbar-expand bg-body-tertiary border-bottom mb-3">
+    <div class="container-xl">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" th:href="@{/}">
+            <img th:src="@{/favicon.svg}" alt="" width="28" height="28">
+            pic2filament
+        </a>
+        <span class="navbar-text d-none d-md-inline small">De imagen a relieve multicolor imprimible en 3D</span>
+        <button type="button" class="btn btn-outline-secondary btn-sm ms-auto" id="boton-tema"
+                aria-label="Cambiar entre tema claro y oscuro" title="Cambiar tema">
+            <span class="tema-claro">☀︎ Claro</span><span class="tema-oscuro">☾ Oscuro</span>
+        </button>
+    </div>
+</nav>
+
+<div th:fragment="tablaCambios" class="table-responsive" id="tabla-cambios">
+    <table class="table table-sm align-middle mb-0">
+        <thead>
+        <tr>
+            <th scope="col">Filamento</th>
+            <th scope="col" class="text-end">Capa de inicio</th>
+            <th scope="col" class="text-end">Altura Z</th>
+            <th scope="col">Color</th>
+            <th scope="col" class="text-end">TD</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${cambios}">
+            <td><span class="badge text-bg-secondary me-1" th:text="${c.filamento()}">1</span><span th:text="${c.nombre()}">Negro</span></td>
+            <td class="text-end">
+                <strong th:text="${c.capaInicio()}">1</strong>
+                <span th:if="${c.filamento() == 1}" class="text-body-secondary small">(inicio)</span>
+            </td>
+            <td class="text-end"><span th:text="${#numbers.formatDecimal(c.z(), 1, 2, 'COMMA')}">0,16</span> mm</td>
+            <td><span class="muestra" th:style="'background:' + ${c.color()}"></span> <code th:text="${c.color()}">#000000</code></td>
+            <td class="text-end"><span th:text="${#numbers.formatDecimal(c.td(), 1, 2, 'COMMA')}">0,60</span> mm</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

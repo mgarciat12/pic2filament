@@ -1,0 +1,127 @@
+/* pic2filament: estilos propios sobre Bootstrap */
+
+.zona-subida {
+    border: 2px dashed var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, background-color .15s;
+}
+.zona-subida:hover, .zona-subida:focus, .zona-subida.arrastrando {
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+    outline: none;
+}
+
+.vista-previa {
+    position: relative;
+    min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+    background-image:
+        linear-gradient(45deg, var(--bs-secondary-bg) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--bs-secondary-bg) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--bs-secondary-bg) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--bs-secondary-bg) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    overflow: hidden;
+}
+.vista-previa img {
+    max-width: 100%;
+    max-height: 70vh;
+    display: block;
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .25);
+}
+.vista-previa .cargando {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--bs-body-bg-rgb), .45);
+}
+
+.filamento .form-control-color {
+    width: 2.5rem;
+    height: 2rem;
+    padding: .2rem;
+    flex: 0 0 auto;
+}
+.filamento .biblioteca {
+    min-width: 0;
+}
+
+.muestra {
+    display: inline-block;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: .25rem;
+    vertical-align: -0.2rem;
+    border: 1px solid var(--bs-border-color);
+}
+
+/* Pila de capas */
+.pila {
+    overflow-x: auto;
+}
+.pila .fila {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    min-width: 100%;
+}
+.pila .etiqueta {
+    flex: 0 0 5.5rem;
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+    align-self: center;
+}
+.pila .capas {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.pila .capa {
+    flex: 1 1 0;
+    min-width: 4px;
+    height: 1.6rem;
+    border-right: 1px solid rgba(127, 127, 127, .25);
+}
+.pila .capa.base {
+    background-image: repeating-linear-gradient(45deg, rgba(127, 127, 127, .35) 0 2px, transparent 2px 6px);
+    background-blend-mode: multiply;
+}
+.pila .capa.cambio {
+    box-shadow: inset 3px 0 0 var(--bs-danger);
+}
+.pila .marcas {
+    position: relative;
+    height: 2.4rem;
+    flex: 1 1 auto;
+}
+.pila .marca {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-size: .7rem;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.1;
+}
+.pila .marca::before {
+    content: "▲";
+    display: block;
+    color: var(--bs-danger);
+    font-size: .6rem;
+}
+
+.tema-oscuro { display: none; }
+[data-bs-theme="dark"] .tema-claro { display: none; }
+[data-bs-theme="dark"] .tema-oscuro { display: inline; }
+
+#alertas { width: min(92vw, 36rem); }

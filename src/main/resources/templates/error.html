@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Error · pic2filament')}"></head>
+<body>
+<nav th:replace="~{fragmentos :: barra}"></nav>
+<main class="container-xl py-5 text-center">
+    <p class="display-4 fw-semibold" th:text="${status} ?: 'Error'">404</p>
+    <h1 class="h4 mb-3" th:switch="${status}">
+        <span th:case="404">No se ha encontrado la página</span>
+        <span th:case="413">El fichero es demasiado grande</span>
+        <span th:case="*">Se ha producido un error</span>
+    </h1>
+    <p class="text-body-secondary" th:if="${message != null and message != '' and status != 404}" th:text="${message}"></p>
+    <a class="btn btn-primary mt-3" th:href="@{/}">Volver al inicio</a>
+</main>
+<script th:src="@{/js/tema.js}"></script>
+</body>
+</html>

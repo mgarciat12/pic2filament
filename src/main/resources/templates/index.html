@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('pic2filament · imagen a relieve multicolor')}"></head>
+<body>
+<nav th:replace="~{fragmentos :: barra}"></nav>
+
+<main class="container-xl pb-5" id="app"
+      th:attr="data-max-subida=${maxSubidaBytes},data-max-subida-texto=${maxSubida},data-api=@{/api},data-base=@{/}">
+
+    <div id="alertas" class="position-fixed top-0 start-50 translate-middle-x mt-2 z-3" aria-live="polite"></div>
+
+    <div class="row g-3">
+        <!-- ============ Ajustes ============ -->
+        <div class="col-lg-5 col-xl-4">
+            <form id="ajustes" novalidate onsubmit="return false">
+
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold">1. Imagen</div>
+                    <div class="card-body">
+                        <label for="imagen" id="zona-subida" class="zona-subida w-100" tabindex="0">
+                            <span class="d-block fs-4 mb-1" aria-hidden="true">⇪</span>
+                            <span class="d-block fw-semibold">Arrastra una imagen aquí o pulsa para elegirla</span>
+                            <span class="d-block small text-body-secondary">También puedes pegarla con Ctrl+V / ⌘V</span>
+                            <span class="d-block small text-body-secondary">PNG, JPG o WebP · máx. <span th:text="${maxSubida}">15 MB</span></span>
+                        </label>
+                        <input type="file" id="imagen" class="visually-hidden" accept="image/png,image/jpeg,image/webp">
+                        <div id="info-imagen" class="small mt-2 text-body-secondary d-none"></div>
+                    </div>
+                </section>
+
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold">2. Tamaño</div>
+                    <div class="card-body row g-2">
+                        <div class="col-6">
+                            <label for="anchoMm" class="form-label small">Ancho (mm)</label>
+                            <input type="number" class="form-control" id="anchoMm" min="10" max="500" step="1" th:value="${d.ancho()}">
+                        </div>
+                        <div class="col-6">
+                            <label for="mmPorPixel" class="form-label small">Detalle (mm/píxel)</label>
+                            <input type="number" class="form-control" id="mmPorPixel" min="0.05" max="5" step="0.05" th:value="${d.detalle()}">
+                        </div>
+                        <div class="col-12 form-text mt-1">La rejilla se limita a <span th:text="${maxRejilla}">600</span>×<span th:text="${maxRejilla}">600</span> puntos.</div>
+                    </div>
+                </section>
+
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold">3. Capas</div>
+                    <div class="card-body row g-2">
+                        <div class="col-6">
+                            <label for="alturaCapa" class="form-label small">Altura de capa (mm)</label>
+                            <input type="number" class="form-control" id="alturaCapa" min="0.04" max="0.5" step="0.01" th:value="${d.capa()}">
+                        </div>
+                        <div class="col-6">
+                            <label for="alturaPrimeraCapa" class="form-label small">Primera capa (mm)</label>
+                            <input type="number" class="form-control" id="alturaPrimeraCapa" min="0.04" max="1" step="0.01" th:value="${d.primeraCapa()}">
+                        </div>
+                        <div class="col-6">
+                            <label for="capasBase" class="form-label small">Capas de base</label>
+                            <input type="number" class="form-control" id="capasBase" min="1" max="200" step="1" th:value="${d.base()}">
+                        </div>
+                        <div class="col-6">
+                            <label for="capasTotales" class="form-label small">Capas totales</label>
+                            <input type="number" class="form-control" id="capasTotales" min="2" th:attr="max=${maxCapas}" step="1" th:value="${d.total()}">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold d-flex align-items-center">
+                        <span>4. Filamentos</span>
+                        <span class="small text-body-secondary ms-2">de abajo a arriba</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="filamentos" class="vstack gap-2"></div>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="anadir-filamento">+ Añadir filamento</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="detectar-colores" disabled>Detectar colores de la imagen</button>
+                        </div>
+                        <div class="form-check form-switch mt-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="optimizar" checked>
+                            <label class="form-check-label" for="optimizar">Optimizar automáticamente las capas de cambio</label>
+                        </div>
+                        <div class="form-text">Desactívalo para fijar a mano la capa de inicio de cada filamento.</div>
+                    </div>
+                </section>
+
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold">5. Ajuste de la imagen</div>
+                    <div class="card-body">
+                        <div class="mb-2 small">Criterio de ajuste</div>
+                        <div class="btn-group w-100 mb-3" role="group" aria-label="Criterio de ajuste">
+                            <input type="radio" class="btn-check" name="criterio" id="criterio-color" value="color" checked>
+                            <label class="btn btn-outline-primary btn-sm" for="criterio-color">Color más parecido</label>
+                            <input type="radio" class="btn-check" name="criterio" id="criterio-luminosidad" value="luminosidad">
+                            <label class="btn btn-outline-primary btn-sm" for="criterio-luminosidad">Solo luminosidad</label>
+                        </div>
+                        <label for="contraste" class="form-label small d-flex">Contraste <output class="ms-auto" id="contraste-valor">1,00</output></label>
+                        <input type="range" class="form-range" id="contraste" min="0.2" max="3" step="0.05" value="1">
+                        <label for="brillo" class="form-label small d-flex">Brillo <output class="ms-auto" id="brillo-valor">0</output></label>
+                        <input type="range" class="form-range" id="brillo" min="-50" max="50" step="1" value="0">
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="reducirRuido">
+                            <label class="form-check-label" for="reducirRuido">Reducción de ruido (mediana 3×3)</label>
+                        </div>
+                        <div class="row g-2 mt-1 align-items-end">
+                            <div class="col-6">
+                                <label for="marcoMm" class="form-label small">Marco (mm, 0 = sin marco)</label>
+                                <input type="number" class="form-control" id="marcoMm" min="0" max="20" step="0.5" value="0">
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100" id="restablecer">Restablecer ajustes</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </div>
+
+        <!-- ============ Resultado ============ -->
+        <div class="col-lg-7 col-xl-8">
+            <section class="card mb-3">
+                <div class="card-header d-flex flex-wrap gap-2 align-items-center">
+                    <span class="fw-semibold me-auto">Vista previa</span>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Modo de vista previa">
+                        <input type="radio" class="btn-check" name="modo" id="modo-simulacion" value="simulacion" checked>
+                        <label class="btn btn-outline-secondary" for="modo-simulacion">Simulación</label>
+                        <input type="radio" class="btn-check" name="modo" id="modo-relieve" value="relieve">
+                        <label class="btn btn-outline-secondary" for="modo-relieve">Relieve</label>
+                        <input type="radio" class="btn-check" name="modo" id="modo-alturas" value="alturas">
+                        <label class="btn btn-outline-secondary" for="modo-alturas">Alturas</label>
+                        <input type="radio" class="btn-check" name="modo" id="modo-original" value="original">
+                        <label class="btn btn-outline-secondary" for="modo-original">Original</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="vista-previa" id="vista-previa">
+                        <div class="vista-vacia text-body-secondary text-center p-4" id="vista-vacia">
+                            Sube una imagen para ver aquí cómo quedará la pieza impresa.
+                        </div>
+                        <img id="imagen-vista" alt="Vista previa del relieve" class="d-none">
+                        <div class="cargando d-none" id="cargando">
+                            <div class="spinner-border" role="status"><span class="visually-hidden">Calculando…</span></div>
+                        </div>
+                    </div>
+                    <div id="estadisticas" class="small text-body-secondary mt-2"></div>
+                </div>
+            </section>
+
+            <section class="card mb-3">
+                <div class="card-header fw-semibold">Pila de capas</div>
+                <div class="card-body">
+                    <div id="pila" class="pila"><div class="text-body-secondary small">Sin datos todavía.</div></div>
+                    <div class="small text-body-secondary mt-2">
+                        Arriba, el filamento de cada capa; abajo, el color que se verá con esa altura. Las marcas indican dónde cambiar de filamento.
+                    </div>
+                </div>
+            </section>
+
+            <section class="card mb-3">
+                <div class="card-header fw-semibold">Cambios de filamento</div>
+                <div class="card-body">
+                    <div id="contenedor-cambios">
+                        <div class="text-body-secondary small">Aparecerán cuando se genere el relieve.</div>
+                    </div>
+                    <p class="small text-body-secondary mt-2 mb-0">
+                        Capas numeradas desde 1, como en el laminador. Añade una pausa o un M600 <strong>al empezar</strong> la capa indicada.
+                    </p>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header fw-semibold">Descargas</div>
+                <div class="card-body d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary disabled" id="descargar-zip" aria-disabled="true" href="#">Descargar ZIP (STL + vista previa + instrucciones)</a>
+                    <a class="btn btn-outline-primary disabled" id="descargar-stl" aria-disabled="true" href="#">Solo STL</a>
+                    <a class="btn btn-outline-secondary disabled" id="descargar-3mf" aria-disabled="true" href="#">3MF con cambios de color</a>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<template id="plantilla-filamento">
+    <div class="filamento border rounded p-2">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge text-bg-secondary numero">1</span>
+            <input type="color" class="form-control form-control-color color" title="Color del filamento" aria-label="Color">
+            <select class="form-select form-select-sm biblioteca" aria-label="Filamento de la biblioteca">
+                <option value="">Personalizado</option>
+            </select>
+            <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-secondary subir" title="Subir" aria-label="Subir">↑</button>
+                <button type="button" class="btn btn-outline-secondary bajar" title="Bajar" aria-label="Bajar">↓</button>
+                <button type="button" class="btn btn-outline-danger quitar" title="Quitar" aria-label="Quitar">✕</button>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Hex</span>
+                    <input type="text" class="form-control hex" maxlength="7" spellcheck="false" aria-label="Color hexadecimal">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" title="Distancia de transmisión (mm)">TD</span>
+                    <input type="number" class="form-control td" min="0.05" max="100" step="0.1" aria-label="TD en mm">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" title="Capa de inicio">Capa</span>
+                    <input type="number" class="form-control inicio" min="1" step="1" aria-label="Capa de inicio">
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/tema.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

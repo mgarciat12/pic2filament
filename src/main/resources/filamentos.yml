@@ -1,0 +1,55 @@
+# Biblioteca de filamentos de pic2filament.
+#
+# Puedes copiar este fichero, añadir tus filamentos y apuntar a él con la variable de
+# entorno FILAMENTS_FILE (o la propiedad pic2filament.filaments-file).
+#
+#   nombre: texto que se muestra en la interfaz
+#   color:  color hexadecimal (#RRGGBB) tal como se ve el filamento en una capa gruesa
+#   td:     distancia de transmisión en mm (grosor a partir del cual casi no deja pasar luz).
+#           Los valores de abajo son aproximados: mide los tuyos (ver README).
+filamentos:
+  - nombre: Negro
+    color: "#111111"
+    td: 0.6
+  - nombre: Gris oscuro
+    color: "#3c3c3c"
+    td: 1.2
+  - nombre: Gris
+    color: "#7f7f7f"
+    td: 2.0
+  - nombre: Gris claro
+    color: "#bdbdbd"
+    td: 3.0
+  - nombre: Blanco
+    color: "#f7f7f5"
+    td: 4.5
+  - nombre: Rojo
+    color: "#c0262b"
+    td: 2.5
+  - nombre: Naranja
+    color: "#f07b1b"
+    td: 3.5
+  - nombre: Amarillo
+    color: "#f4d40e"
+    td: 6.0
+  - nombre: Verde
+    color: "#1f9a46"
+    td: 2.0
+  - nombre: Azul
+    color: "#1e4fb4"
+    td: 1.5
+  - nombre: Azul cielo
+    color: "#5fb5e8"
+    td: 3.5
+  - nombre: Morado
+    color: "#6a2f9c"
+    td: 1.5
+  - nombre: Marrón
+    color: "#6b4226"
+    td: 1.2
+  - nombre: Rosa
+    color: "#f08cb4"
+    td: 4.0
+  - nombre: Beige
+    color: "#e3cfa8"
+    td: 4.0
