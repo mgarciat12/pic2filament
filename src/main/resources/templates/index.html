@@ -151,7 +151,7 @@
                 <div class="card-body">
                     <div id="pila" class="pila"><div class="text-body-secondary small">Sin datos todavía.</div></div>
                     <div class="small text-body-secondary mt-2">
-                        Arriba, el filamento de cada capa; abajo, el color que se verá con esa altura. Las marcas indican dónde cambiar de filamento.
+                        Arriba, el filamento de cada capa; abajo, el color que se verá con esa altura. Las marcas (▲) señalan la capa en la que empieza cada filamento nuevo.
                     </div>
                 </div>
             </section>
@@ -185,7 +185,7 @@
         <div class="d-flex align-items-center gap-2 mb-2">
             <span class="badge text-bg-secondary numero">1</span>
             <input type="color" class="form-control form-control-color color" title="Color del filamento" aria-label="Color">
-            <select class="form-select form-select-sm biblioteca" aria-label="Filamento de la biblioteca">
+            <select class="form-select form-select-sm biblioteca flex-grow-1" aria-label="Filamento de la biblioteca">
                 <option value="">Personalizado</option>
             </select>
             <div class="btn-group btn-group-sm">
@@ -195,23 +195,20 @@
             </div>
         </div>
         <div class="row g-2">
-            <div class="col-5">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">Hex</span>
-                    <input type="text" class="form-control hex" maxlength="7" spellcheck="false" aria-label="Color hexadecimal">
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text" title="Distancia de transmisión (mm)">TD</span>
-                    <input type="number" class="form-control td" min="0.05" max="100" step="0.1" aria-label="TD en mm">
-                </div>
+            <div class="col-4">
+                <label class="d-block small text-body-secondary">Hex
+                    <input type="text" class="form-control form-control-sm hex" maxlength="7" spellcheck="false">
+                </label>
             </div>
             <div class="col-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text" title="Capa de inicio">Capa</span>
-                    <input type="number" class="form-control inicio" min="1" step="1" aria-label="Capa de inicio">
-                </div>
+                <label class="d-block small text-body-secondary" title="Distancia de transmisión">TD (mm)
+                    <input type="number" class="form-control form-control-sm td" min="0.05" max="100" step="0.1">
+                </label>
+            </div>
+            <div class="col-4">
+                <label class="d-block small text-body-secondary">Capa inicio
+                    <input type="number" class="form-control form-control-sm inicio" min="1" step="1">
+                </label>
             </div>
         </div>
     </div>

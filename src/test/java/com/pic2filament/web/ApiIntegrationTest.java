@@ -112,7 +112,7 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.mensaje", containsString("Modo de vista previa no válido")));
 
         mvc.perform(get("/trabajos/{id}/tabla-cambios", id)).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Capa de inicio")))
+                .andExpect(content().string(containsString("Capa inicio")))
                 .andExpect(content().string(containsString("Blanco")))
                 .andExpect(content().string(containsString("0,16")));
 

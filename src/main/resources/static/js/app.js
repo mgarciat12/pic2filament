@@ -91,7 +91,7 @@
             estado.biblioteca.forEach(function (b) {
                 var o = document.createElement('option');
                 o.value = b.nombre;
-                o.textContent = b.nombre + ' · TD ' + coma(b.td, 1);
+                o.textContent = b.nombre;
                 sel.appendChild(o);
             });
             var lib = deBiblioteca(f.nombre);
@@ -333,7 +333,8 @@
             var m = document.createElement('div');
             m.className = 'marca';
             m.style.left = ((c.capaInicio - 1) / n * 100) + '%';
-            m.textContent = 'Capa ' + c.capaInicio;
+            m.textContent = c.capaInicio;
+            m.title = 'Cambio al filamento ' + c.filamento + ' en la capa ' + c.capaInicio;
             marcas.appendChild(m);
         });
         filaMarcas.appendChild(marcas);

@@ -13,7 +13,7 @@ AJUSTES DEL LAMINADOR (obligatorios para que los colores coincidan)
 - Altura de capa: 0,08 mm
 - Altura de capa variable/adaptativa: desactivada
 - Relleno: 100 % (o suficientes perímetros/paredes para que la pieza sea maciza)
-- Capas superiores e inferiores: las que quiera; con relleno al 100 % no influyen
+- Capas superiores e inferiores: las que quieras; con relleno al 100 % no influyen
 - Imprime la pieza tumbada, con la imagen hacia arriba (tal cual sale el STL)
 - Capas totales: 28 (de ellas 4 de base)
 
@@ -43,4 +43,4 @@ PrusaSlicer:
 
 Comprueba que el número de capa y la altura Z que muestra el laminador coinciden con esta lista.
 
-Calculado en 100 ms, error medio 782,59.
+Calculado en 94 ms, error medio 782,59.

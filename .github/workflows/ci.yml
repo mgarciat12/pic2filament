@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Pruebas (mvn verify)
+        run: ./mvnw -B verify
+
+      - name: Construir la imagen Docker
+        run: docker build -t pic2filament:${{ github.sha }} .
+
+      - name: Arrancar el contenedor y comprobar la salud
+        run: |
+          docker run -d --name pic2filament -p 8080:8080 pic2filament:${{ github.sha }}
+          for i in $(seq 1 30); do
+            if curl -fs http://localhost:8080/actuator/health | grep -q UP; then echo "OK"; exit 0; fi
+            sleep 2
+          done
+          docker logs pic2filament
+          exit 1

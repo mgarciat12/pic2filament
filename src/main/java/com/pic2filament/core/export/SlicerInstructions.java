@@ -44,7 +44,7 @@ public final class SlicerInstructions {
         sb.append(f("- Altura de capa: %.2f mm", l.layerHeight())).append(nl);
         sb.append("- Altura de capa variable/adaptativa: desactivada").append(nl);
         sb.append("- Relleno: 100 % (o suficientes perímetros/paredes para que la pieza sea maciza)").append(nl);
-        sb.append("- Capas superiores e inferiores: las que quiera; con relleno al 100 % no influyen").append(nl);
+        sb.append("- Capas superiores e inferiores: las que quieras; con relleno al 100 % no influyen").append(nl);
         sb.append("- Imprime la pieza tumbada, con la imagen hacia arriba (tal cual sale el STL)").append(nl);
         sb.append(f("- Capas totales: %d (de ellas %d de base)", l.totalLayers(), l.baseLayers())).append(nl);
         sb.append(nl);

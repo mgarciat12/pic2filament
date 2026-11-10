@@ -125,3 +125,7 @@
 [data-bs-theme="dark"] .tema-oscuro { display: inline; }
 
 #alertas { width: min(92vw, 36rem); }
+
+@media (max-width: 575.98px) {
+    .pila .etiqueta { flex-basis: 4.2rem; font-size: .7rem; }
+}

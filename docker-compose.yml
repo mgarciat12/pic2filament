@@ -1,0 +1,25 @@
+services:
+  pic2filament:
+    build: .
+    image: pic2filament:latest
+    container_name: pic2filament
+    ports:
+      # Puerto publicado en el host: APP_PORT (por defecto 8080)
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      MAX_UPLOAD_SIZE: ${MAX_UPLOAD_SIZE:-15MB}
+      MAX_GRID: ${MAX_GRID:-600}
+      JOB_TTL: ${JOB_TTL:-2h}
+      # Biblioteca de filamentos propia (descomenta también el volumen de abajo):
+      # FILAMENTS_FILE: /config/filamentos.yml
+    volumes:
+      # Imágenes subidas (se borran solas al caducar el trabajo)
+      - pic2filament-tmp:/tmp/pic2filament
+      # - ./filamentos.yml:/config/filamentos.yml:ro
+    restart: unless-stopped
+    mem_limit: 1g
+    mem_reservation: 256m
+    cpus: 2.0
+
+volumes:
+  pic2filament-tmp:
