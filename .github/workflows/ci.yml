@@ -21,7 +21,7 @@ jobs:
           cache: maven
 
       - name: Instalar libheif (pruebas de HEIC)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq libheif-examples
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libheif-examples libheif-plugin-libde265
 
       - name: Pruebas (mvn verify)
         run: ./mvnw -B verify
