@@ -29,6 +29,7 @@ import com.pic2filament.service.FilamentLibrary;
 import com.pic2filament.service.Job;
 import com.pic2filament.service.LibraryFilament;
 import com.pic2filament.service.Pic2filamentException;
+import com.pic2filament.service.ProfileLibrary;
 import com.pic2filament.service.ReliefService;
 import com.pic2filament.service.ReliefService.DetectedColor;
 import com.pic2filament.service.ReliefService.PreviewMode;
@@ -42,7 +43,9 @@ import jakarta.validation.Valid;
  * POST /api/trabajos/{id}/colores?cantidad=4                        → colores detectados
  * POST /api/trabajos/{id}/procesar           (JSON de ajustes)       → resultado
  * GET  /api/trabajos/{id}/vista/{modo}.png   simulacion|relieve|alturas|original
- * GET  /api/trabajos/{id}/descarga.zip | .stl | .3mf
+ * GET  /api/trabajos/{id}/descarga.zip | .stl
+ * GET  /api/trabajos/{id}/descarga.3mf?perfil=…&amp;modo=automatico|manual
+ * GET  /api/perfiles                                                → perfiles de laminador
  * GET  /api/filamentos                                              → biblioteca
  * </pre>
  */
@@ -53,10 +56,12 @@ public class ApiController {
 
     private final ReliefService service;
     private final FilamentLibrary library;
+    private final ProfileLibrary profileLibrary;
 
-    public ApiController(ReliefService service, FilamentLibrary library) {
+    public ApiController(ReliefService service, FilamentLibrary library, ProfileLibrary profileLibrary) {
         this.service = service;
         this.library = library;
+        this.profileLibrary = profileLibrary;
     }
 
     /** Trabajo creado tras subir una imagen. */
@@ -119,10 +124,25 @@ public class ApiController {
         return download(service.baseName(id) + ".stl", "model/stl", out -> service.writeStl(id, out));
     }
 
+    /** Perfiles de laminador disponibles para el proyecto 3MF. */
+    public record ProfileResponse(String id, String nombre, boolean porDefecto) {
+    }
+
+    @GetMapping("/perfiles")
+    public List<ProfileResponse> profiles() {
+        return profileLibrary.all().stream()
+                .map(p -> new ProfileResponse(p.id(), p.name(), p.id().equals(profileLibrary.defaultId()))).toList();
+    }
+
     @GetMapping("/trabajos/{id}/descarga.3mf")
-    public ResponseEntity<StreamingResponseBody> download3mf(@PathVariable String id) {
+    public ResponseEntity<StreamingResponseBody> download3mf(@PathVariable String id,
+            @RequestParam(name = "perfil", required = false) String profileId,
+            @RequestParam(name = "modo", required = false) String mode) {
+        var profile = service.profile(profileId);
+        var changeMode = ReliefService.changeMode(mode);
         service.lastResult(id);
-        return download(service.baseName(id) + ".3mf", "model/3mf", out -> service.write3mf(id, out));
+        return download(service.baseName(id) + ".3mf", "model/3mf",
+                out -> service.write3mf(id, profile, changeMode, out));
     }
 
     private static ResponseEntity<StreamingResponseBody> download(String filename, String type,

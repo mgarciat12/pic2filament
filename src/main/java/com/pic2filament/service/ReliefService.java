@@ -21,7 +21,9 @@ import com.pic2filament.core.ReliefSettings;
 import com.pic2filament.core.color.ColorDistance;
 import com.pic2filament.core.color.ColorMath;
 import com.pic2filament.core.export.ColorChange;
-import com.pic2filament.core.export.ThreeMfWriter;
+import com.pic2filament.core.export.ChangeMode;
+import com.pic2filament.core.export.ProjectThreeMfWriter;
+import com.pic2filament.core.export.SlicerProfile;
 import com.pic2filament.core.export.ZipExporter;
 import com.pic2filament.core.image.GridSize;
 import com.pic2filament.core.image.RgbImage;
@@ -66,11 +68,14 @@ public class ReliefService {
     private final ImageLoader loader;
     private final JobStore store;
     private final FilamentLibrary library;
+    private final ProfileLibrary profiles;
     private final ReliefEngine engine;
     private final Semaphore permits;
 
-    public ReliefService(Pic2filamentProperties props, ImageLoader loader, JobStore store, FilamentLibrary library) {
+    public ReliefService(Pic2filamentProperties props, ImageLoader loader, JobStore store, FilamentLibrary library,
+            ProfileLibrary profiles) {
         this.props = props;
+        this.profiles = profiles;
         this.loader = loader;
         this.store = store;
         this.library = library;
@@ -247,9 +252,28 @@ public class ReliefService {
         ZipExporter.writeStl(r, baseName(jobId), out);
     }
 
-    public void write3mf(String jobId, OutputStream out) throws IOException {
+    /** Comprueba el perfil y el modo antes de empezar a enviar la descarga. */
+    public SlicerProfile profile(String profileId) {
+        return profiles.find(profileId).orElseThrow(() -> Pic2filamentException
+                .invalid("Perfil de laminador desconocido: " + profileId + "."));
+    }
+
+    public static ChangeMode changeMode(String mode) {
+        if (mode == null || mode.isBlank() || mode.equalsIgnoreCase("automatico")) {
+            return ChangeMode.AUTOMATIC;
+        }
+        if (mode.equalsIgnoreCase("manual")) {
+            return ChangeMode.MANUAL;
+        }
+        throw Pic2filamentException.invalid("Modo de cambio no válido. Usa «automatico» o «manual».");
+    }
+
+    public void write3mf(String jobId, SlicerProfile profile, ChangeMode mode, OutputStream out) throws IOException {
         ReliefResult r = lastResult(jobId);
-        ThreeMfWriter.write(r, baseName(jobId), out);
+        java.io.ByteArrayOutputStream png = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(PreviewRenderer.upscale(PreviewRenderer.simulation(r.heights(), r.stack()), 512),
+                "png", png);
+        ProjectThreeMfWriter.write(r, baseName(jobId), profile, mode, png.toByteArray(), out);
     }
 
     public ResultResponse toResponse(Job job, ReliefResult r) {

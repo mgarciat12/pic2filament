@@ -38,8 +38,24 @@ Decisiones tomadas sin supervisión, con el motivo de cada una.
 - **Validación**: el tamaño del fichero se comprueba también en el servicio, no solo en Tomcat. Así el 413 funciona igual en MockMvc y en el servidor real. `server.tomcat.max-swallow-size=100MB` hace que el navegador reciba el JSON de error en lugar de un corte de conexión.
 - **Concurrencia**: un semáforo limita las conversiones simultáneas al número de CPU para acotar la memoria.
 
+## Proyecto 3MF (11/11/2026, a petición: «el STL no tiene colores»)
+- **Formato elegido**: el proyecto de Bambu Studio, porque es el que leen Bambu Studio, Anycubic Slicer Next (es un derivado de Bambu Studio: escribe `Application = BambuStudio-2.0.0.3`) y OrcaSlicer. Sustituye al 3MF genérico de la primera versión, que usaba un tipo de cambio (0) que estos laminadores ignoraban.
+- **Cómo lo averigüé**:
+  1. Estudié un HueForge para Bambu que había en Descargas (cambios de tipo 2 en modo `MultiAsSingle`).
+  2. Le pedí al propio Anycubic Slicer Next, por línea de comandos, un proyecto de referencia.
+  3. Laminé por línea de comandos cada variante y comprobé en el G-code la capa de cada cambio.
+- **Hace falta el perfil completo** de la impresora (cientos de claves): con un `project_settings.config` mínimo, Anycubic Slicer Next se cuelga. Por eso hay plantillas de perfil en `src/main/resources/perfiles/` y un directorio configurable (`PROFILES_DIR`) para añadir las tuyas.
+- **Plantilla de la Kobra 3**: es la que exporta Anycubic Slicer Next 2.0.0.3 por línea de comandos (impresora + `0.08mm Standard` + 4× `Anycubic PLA`). La comparé con mi propia resolución de la herencia de perfiles y coinciden.
+- **Plantilla de la X1C**: la exportación por línea de comandos de Bambu Studio 1.10 **resolvía mal la herencia**: cama de 200×200, altura de 100 mm, 220 °C convertidos en 200 °C y ajustes por filamento con un único valor, lo que hacía que se ignoraran los cambios de AMS. Resolví yo la herencia de los perfiles de sistema y corregí 140 valores. Laminada después, sale correcta: cama de 256, 220 °C y cambios de AMS en su capa.
+- **Modos**: *automático* = tipo 2 (cambio de herramienta, `MultiAsSingle`, multimaterial y torre de purga activados); *manual* = tipo 1 (pausa → `M600` en la Kobra 3). El tipo 0 («cambio de color») lo ignoran ambos laminadores en este contexto: lo comprobé.
+- **Valores de pic2filament que se imponen al perfil**: `layer_height`, `initial_layer_print_height`, `sparse_infill_density = 100%`, `sparse_infill_pattern = zig-zag`, `adaptive_layer_height = 0` y `filament_colour`. Si se usan menos de 4 filamentos, las ranuras sobrantes repiten el color del último, que no se usa.
+- **Posición**: la pieza se centra en la cama según `printable_area`.
+- **Miniatura**: la vista previa simulada se guarda como miniatura del proyecto.
+- **Perfil por defecto: Kobra 3**. Es la impresora que tienes seleccionada en Anycubic Slicer Next y la que pediste probar.
+- **PrusaSlicer** queda fuera del 3MF (no está instalado y no lo usas). Para PrusaSlicer sigue valiendo el STL + `.txt`.
+- **Licencia**: las plantillas proceden de los perfiles de sistema de los laminadores (AGPL). Son valores de configuración y se usan para generar proyectos compatibles.
+
 ## Funciones opcionales (hechas)
-- **3MF con cambios de color**: incluye `Metadata/Prusa_Slicer_custom_gcode_per_print_z.xml` (tipo 0, `M600`) y `Metadata/custom_gcode_per_layer.xml` (Bambu/Orca) con `print_z/top_z` = Z de la capa donde empieza el nuevo filamento. **No lo he podido probar en un laminador real**: el formato se basa en lo que esos laminadores escriben en sus proyectos. Por eso el `.txt` sigue siendo la referencia.
 - **Marco**: es una banda a la altura máxima, de `marcoMm` de ancho. La pieza crece por los cuatro lados.
 
 ## Interfaz

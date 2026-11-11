@@ -11,6 +11,20 @@ Todo lo pedido está hecho, también las dos funciones opcionales (3MF con cambi
 - Errores: JSON coherente con mensajes en español para la API y página `error.html` para el navegador.
 - Docker multietapa (JRE 25 Alpine, usuario no root, HEALTHCHECK), docker-compose (puerto `APP_PORT`, `restart: unless-stopped`, 1 GB), workflow de GitHub Actions, README, DECISIONES.
 
+## Actualización 11/11/2026: proyecto 3MF para el laminador
+- El STL no lleva colores ni ajustes (es una limitación del formato). Ahora la descarga recomendada es un **proyecto 3MF** para **Anycubic Slicer Next** (Kobra 3, 0,4) o **Bambu Studio** (X1 Carbon, 0,4). Lleva la altura de capa, el relleno al 100 %, los colores y los cambios de filamento, en modo **automático** (ACE Pro / AMS) o **manual** (pausa M600).
+- Lo comprobé laminando con los propios laminadores por línea de comandos, con `marin.jpg` y negro, rojo, amarillo y blanco:
+
+  | Perfil y modo | Resultado en el G-code |
+  |---|---|
+  | Kobra 3, automático | `T1`, `T2` y `T3` en las capas 5, 8 y 19 (Z 0,48 / 0,72 / 1,60) |
+  | Kobra 3, manual | `M600` en las mismas capas |
+  | X1C, automático | Cambio de AMS (`M620 S1A/S2A/S3A`) en las mismas capas |
+  | X1C, manual | Pausa en las mismas capas |
+
+  En todos los casos: 28 capas de 0,16 + 0,08 mm, relleno al 100 % y los 4 colores.
+- Los 3MF de prueba están en `ejemplo/salida/*.3mf`.
+
 ## Cómo arrancarlo
 ```bash
 docker compose up -d --build                     # http://localhost:8080
@@ -20,7 +34,7 @@ APP_PORT=9090 docker compose up -d --build       # otro puerto
 ```
 
 ## Qué he comprobado
-- `./mvnw verify` → **BUILD SUCCESS**: 62 pruebas unitarias y de integración y 1 de extremo a extremo, todas en verde.
+- `./mvnw verify` → **BUILD SUCCESS**: 69 pruebas unitarias y de integración y 2 de extremo a extremo (una por imagen de ejemplo), todas en verde.
 - **App en marcha** (java -jar), con peticiones curl reales sobre la imagen de ejemplo:
   - Subida → 201.
   - Proceso 401×301 con 4 filamentos en unos 100 ms.
@@ -37,7 +51,7 @@ APP_PORT=9090 docker compose up -d --build       # otro puerto
   - Con «Detectar colores» sale bastante plana: los colores detectados son tonos medios apagados y el optimizador agrupa los cambios en las capas 5–7.
   - Con negro, rojo, amarillo y blanco de la biblioteca sale mejor: pelo crema, ojos rojos y jersey negro, con cambios en las capas 5, 8 y 19.
   - **La imagen `marin.jpg` no está en ningún commit**: es una ilustración de un personaje con derechos de autor y el repositorio va a ser público. Decide tú si la subes.
-- **3MF**: hay que probar en Bambu Studio, OrcaSlicer y PrusaSlicer que se reconocen los cambios integrados.
+- **Proyecto 3MF**: comprobado con los motores de laminado de Anycubic Slicer Next 2.0.0.3 y Bambu Studio 1.10 (por línea de comandos). Falta que confirmes que se abre bien en la interfaz gráfica.
 - **TD de la biblioteca**: son valores aproximados. Mide los tuyos.
 - **Workflow de CI**: no se ha ejecutado en GitHub porque no he hecho push.
 - No se lee la orientación EXIF de los JPG. Las fotos de móvil giradas pueden salir rotadas.

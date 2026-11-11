@@ -121,11 +121,21 @@ class EndToEndIT {
         String txt = new String(entries.get(stem + "-cambios.txt"), StandardCharsets.UTF_8);
         assertThat(txt).contains("CAMBIOS DE FILAMENTO").contains("cambia al filamento 4");
 
+        // Proyecto 3MF (Anycubic Kobra 3, cambio automático)
+        HttpResponse<byte[]> mf = http.send(HttpRequest.newBuilder(
+                URI.create(api + "/descarga.3mf?perfil=anycubic-kobra3-0.4&modo=automatico")).build(),
+                HttpResponse.BodyHandlers.ofByteArray());
+        assertThat(mf.statusCode()).isEqualTo(200);
+        Map<String, byte[]> project = ZipExporterTest.unzip(mf.body());
+        String changes = new String(project.get("Metadata/custom_gcode_per_layer.xml"), StandardCharsets.UTF_8);
+        assertThat(changes.split("type=\"2\"", -1)).hasSize(4); // 3 cambios de herramienta
+
         // Resultados para revisar
         Path out = Path.of("ejemplo", "salida");
         Files.createDirectories(out);
         for (Map.Entry<String, byte[]> e : entries.entrySet()) {
             Files.write(out.resolve(e.getKey()), e.getValue());
         }
+        Files.write(out.resolve(stem + "-kobra3.3mf"), mf.body());
     }
 }

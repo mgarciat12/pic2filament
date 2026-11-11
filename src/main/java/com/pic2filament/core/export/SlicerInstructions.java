@@ -64,6 +64,14 @@ public final class SlicerInstructions {
         }
         sb.append(nl);
 
+        sb.append("LO MÁS CÓMODO: PROYECTO 3MF").append(nl);
+        sb.append("----------------------------").append(nl);
+        sb.append("Descarga el «proyecto 3MF» desde pic2filament y ábrelo en Anycubic Slicer Next o Bambu Studio:")
+                .append(nl);
+        sb.append("ya lleva estos ajustes, los colores y los cambios de filamento (automáticos con ACE Pro / AMS")
+                .append(nl);
+        sb.append("o como pausas M600). Si usas este STL, introduce los cambios a mano como se explica abajo.")
+                .append(nl).append(nl);
         sb.append("CÓMO INTRODUCIR LOS CAMBIOS").append(nl);
         sb.append("---------------------------").append(nl);
         sb.append("El cambio se hace al EMPEZAR la capa indicada (pausa o M600 antes de imprimirla).").append(nl)

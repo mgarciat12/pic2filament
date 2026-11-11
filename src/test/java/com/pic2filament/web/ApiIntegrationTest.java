@@ -142,15 +142,32 @@ class ApiIntegrationTest {
         StlChecks.Stl parsed = StlChecks.parse(stl);
         assertThat(parsed.bounds()[3]).isCloseTo(60, org.assertj.core.api.Assertions.within(1e-3));
 
-        MvcResult mfReq = mvc.perform(get("/api/trabajos/{id}/descarga.3mf", id))
-                .andExpect(request().asyncStarted()).andReturn();
-        byte[] mf = mvc.perform(asyncDispatch(mfReq)).andExpect(status().isOk()).andReturn().getResponse()
-                .getContentAsByteArray();
-        Map<String, byte[]> mfEntries = ZipExporterTest.unzip(mf);
-        assertThat(mfEntries).containsKeys("3D/3dmodel.model", "[Content_Types].xml", "_rels/.rels",
-                "Metadata/Prusa_Slicer_custom_gcode_per_print_z.xml", "Metadata/custom_gcode_per_layer.xml");
-        assertThat(new String(mfEntries.get("Metadata/Prusa_Slicer_custom_gcode_per_print_z.xml")))
-                .contains("type=\"0\"").contains("M600");
+        for (String perfil : new String[] { "anycubic-kobra3-0.4", "bambu-x1c-0.4" }) {
+            for (String modo : new String[] { "automatico", "manual" }) {
+                MvcResult mfReq = mvc.perform(get("/api/trabajos/{id}/descarga.3mf", id).param("perfil", perfil)
+                        .param("modo", modo)).andExpect(request().asyncStarted()).andReturn();
+                byte[] mf = mvc.perform(asyncDispatch(mfReq)).andExpect(status().isOk())
+                        .andExpect(header().string("Content-Disposition", containsString("degradado.3mf")))
+                        .andReturn().getResponse().getContentAsByteArray();
+                Map<String, byte[]> mfEntries = ZipExporterTest.unzip(mf);
+                assertThat(mfEntries).containsKeys("3D/3dmodel.model", "3D/Objects/object_1.model",
+                        "Metadata/project_settings.config", "Metadata/custom_gcode_per_layer.xml",
+                        "Metadata/plate_1.png");
+                String settings = new String(mfEntries.get("Metadata/project_settings.config"));
+                assertThat(settings).contains("\"layer_height\": \"0.08\"").contains("\"sparse_infill_density\": \"100%\"")
+                        .doesNotContain("pic2filament_nombre");
+                String gcode = new String(mfEntries.get("Metadata/custom_gcode_per_layer.xml"));
+                assertThat(gcode).contains(modo.equals("automatico") ? "type=\"2\"" : "type=\"1\"");
+            }
+        }
+        mvc.perform(get("/api/trabajos/{id}/descarga.3mf", id).param("perfil", "no-existe"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje", containsString("Perfil de laminador desconocido")));
+        mvc.perform(get("/api/trabajos/{id}/descarga.3mf", id).param("modo", "raro"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/perfiles")).andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == 'anycubic-kobra3-0.4')].porDefecto").value(true))
+                .andExpect(jsonPath("$[?(@.id == 'bambu-x1c-0.4')].nombre").value("Bambu Lab X1 Carbon · boquilla 0,4 (Bambu Studio)"));
     }
 
     @Test

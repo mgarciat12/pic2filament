@@ -266,14 +266,52 @@
             .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
             .then(function (html) { $('#contenedor-cambios').innerHTML = html; })
             .catch(function () { });
+        actualizarDescargas();
+    }
+
+    function actualizarDescargas() {
+        if (!estado.trabajo || !estado.resultado) { return; }
         var base = API + '/trabajos/' + estado.trabajo.id;
-        [['#descargar-zip', '/descarga.zip'], ['#descargar-stl', '/descarga.stl'], ['#descargar-3mf', '/descarga.3mf']]
+        var tresmf = '/descarga.3mf?perfil=' + encodeURIComponent($('#perfil').value || '') +
+            '&modo=' + $('input[name=modoCambio]:checked').value;
+        [['#descargar-zip', '/descarga.zip'], ['#descargar-stl', '/descarga.stl'], ['#descargar-3mf', tresmf]]
             .forEach(function (d) {
                 var a = $(d[0]);
                 a.href = base + d[1];
                 a.classList.remove('disabled');
                 a.removeAttribute('aria-disabled');
             });
+    }
+
+    function cargarPerfiles() {
+        var guardado = null;
+        try { guardado = localStorage.getItem('pic2filament-perfil'); } catch (e) { }
+        fetch(API + '/perfiles')
+            .then(function (r) { return r.json(); })
+            .then(function (lista) {
+                var sel = $('#perfil');
+                var hay = lista.some(function (p) { return p.id === guardado; });
+                lista.forEach(function (p) {
+                    var o = document.createElement('option');
+                    o.value = p.id;
+                    o.textContent = p.nombre;
+                    if (hay ? p.id === guardado : p.porDefecto) { o.selected = true; }
+                    sel.appendChild(o);
+                });
+                actualizarDescargas();
+            })
+            .catch(function () { });
+        try {
+            if (localStorage.getItem('pic2filament-modo-cambio') === 'manual') { $('#cambio-manual').checked = true; }
+        } catch (e) { }
+        ayudaModo();
+    }
+
+    function ayudaModo() {
+        var manual = $('#cambio-manual').checked;
+        $('#ayuda-modo').textContent = manual
+            ? 'Manual: la impresora se pausa (M600) al empezar cada capa de cambio para que cambies el filamento a mano. La vista previa del laminador no mostrará los colores.'
+            : 'Automático: el ACE Pro (Anycubic) o el AMS (Bambu) cambian a la ranura de cada filamento. Carga los filamentos en las ranuras 1, 2, 3 y 4 en el mismo orden que aquí.';
     }
 
     function actualizarVista() {
@@ -438,6 +476,18 @@
         });
         $('#detectar-colores').addEventListener('click', detectarColores);
         $('#restablecer').addEventListener('click', restablecer);
+        $('#perfil').addEventListener('change', function (e) {
+            try { localStorage.setItem('pic2filament-perfil', e.target.value); } catch (er) { }
+            actualizarDescargas();
+        });
+        $$('input[name=modoCambio]').forEach(function (r) {
+            r.addEventListener('change', function (e) {
+                try { localStorage.setItem('pic2filament-modo-cambio', e.target.value); } catch (er) { }
+                ayudaModo();
+                actualizarDescargas();
+            });
+        });
+        cargarPerfiles();
     }
 
     fetch(API + '/filamentos')

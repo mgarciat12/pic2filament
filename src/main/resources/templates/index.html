@@ -170,10 +170,34 @@
 
             <section class="card">
                 <div class="card-header fw-semibold">Descargas</div>
-                <div class="card-body d-flex flex-wrap gap-2">
-                    <a class="btn btn-primary disabled" id="descargar-zip" aria-disabled="true" href="#">Descargar ZIP (STL + vista previa + instrucciones)</a>
-                    <a class="btn btn-outline-primary disabled" id="descargar-stl" aria-disabled="true" href="#">Solo STL</a>
-                    <a class="btn btn-outline-secondary disabled" id="descargar-3mf" aria-disabled="true" href="#">3MF con cambios de color</a>
+                <div class="card-body">
+                    <h2 class="h6">Proyecto 3MF listo para laminar <span class="badge text-bg-success ms-1">recomendado</span></h2>
+                    <p class="small text-body-secondary mb-2">
+                        Ábrelo directamente en el laminador: lleva la altura de capa, el relleno al 100 %, los colores
+                        de los filamentos y los cambios en su capa. Un STL solo guarda la forma, sin colores ni ajustes.
+                    </p>
+                    <div class="row g-2 align-items-end mb-2">
+                        <div class="col-md-7">
+                            <label for="perfil" class="form-label small mb-1">Impresora y laminador</label>
+                            <select id="perfil" class="form-select form-select-sm"></select>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="small mb-1">Cambio de filamento</div>
+                            <div class="btn-group btn-group-sm w-100" role="group" aria-label="Modo de cambio de filamento">
+                                <input type="radio" class="btn-check" name="modoCambio" id="cambio-automatico" value="automatico" checked>
+                                <label class="btn btn-outline-secondary" for="cambio-automatico" title="El ACE Pro o el AMS cambian el filamento solos">Automático</label>
+                                <input type="radio" class="btn-check" name="modoCambio" id="cambio-manual" value="manual">
+                                <label class="btn btn-outline-secondary" for="cambio-manual" title="La impresora se pausa (M600) y lo cambias a mano">Manual (pausa)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-text mb-3" id="ayuda-modo"></div>
+                    <a class="btn btn-primary disabled" id="descargar-3mf" aria-disabled="true" href="#">Descargar proyecto 3MF</a>
+                    <hr>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-outline-primary btn-sm disabled" id="descargar-zip" aria-disabled="true" href="#">ZIP (STL + vista previa + instrucciones)</a>
+                        <a class="btn btn-outline-secondary btn-sm disabled" id="descargar-stl" aria-disabled="true" href="#">Solo STL</a>
+                    </div>
                 </div>
             </section>
         </div>

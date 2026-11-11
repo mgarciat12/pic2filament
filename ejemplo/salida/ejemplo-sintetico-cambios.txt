@@ -26,6 +26,12 @@ Capa   5 (Z = 0,48 mm): cambia al filamento 2: Rojo             #c0262b  TD 2,50
 Capa   7 (Z = 0,64 mm): cambia al filamento 3: Azul cielo       #5fb5e8  TD 3,50 mm
 Capa  12 (Z = 1,04 mm): cambia al filamento 4: Blanco           #f7f7f5  TD 4,50 mm
 
+LO MÁS CÓMODO: PROYECTO 3MF
+----------------------------
+Descarga el «proyecto 3MF» desde pic2filament y ábrelo en Anycubic Slicer Next o Bambu Studio:
+ya lleva estos ajustes, los colores y los cambios de filamento (automáticos con ACE Pro / AMS
+o como pausas M600). Si usas este STL, introduce los cambios a mano como se explica abajo.
+
 CÓMO INTRODUCIR LOS CAMBIOS
 ---------------------------
 El cambio se hace al EMPEZAR la capa indicada (pausa o M600 antes de imprimirla).
@@ -43,4 +49,4 @@ PrusaSlicer:
 
 Comprueba que el número de capa y la altura Z que muestra el laminador coinciden con esta lista.
 
-Calculado en 94 ms, error medio 782,59.
+Calculado en 54 ms, error medio 782,59.

@@ -61,6 +61,10 @@ pic2filament:
   max-concurrent: ${MAX_CONCURRENT:0}
   # Fichero YAML externo con la biblioteca de filamentos (vacío = la incluida).
   filaments-file: ${FILAMENTS_FILE:}
+  # Directorio con perfiles de laminador propios para el proyecto 3MF (project_settings.config).
+  profiles-dir: ${PROFILES_DIR:}
+  # Perfil seleccionado por defecto en la interfaz.
+  default-profile: ${DEFAULT_PROFILE:anycubic-kobra3-0.4}
 
 logging:
   level:

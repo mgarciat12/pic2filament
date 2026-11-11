@@ -24,9 +24,9 @@ Vista previa generada con la imagen de ejemplo y 4 filamentos (negro, rojo, azul
 3. **Vista previa** sin recargar la página, con cuatro modos: simulación de la pieza impresa, relieve sombreado, mapa de alturas y original. Incluye además la pila de capas con los puntos de cambio.
 4. **Tabla de cambios de filamento**: filamento, capa de inicio (numerada desde 1, como en el laminador), altura Z, color y TD.
 5. **Descargas**:
+   - **Proyecto 3MF** listo para abrir en **Anycubic Slicer Next** o **Bambu Studio**: lleva la malla, el perfil de la impresora con la altura de capa, el relleno al 100 %, los colores y los cambios de filamento en su capa. Los cambios pueden ser automáticos (ACE Pro / AMS) o pausas M600.
    - **ZIP** con el STL binario, un PNG de la vista previa y un `.txt` con los ajustes del laminador y los cambios de color.
    - **Solo el STL**.
-   - **3MF** con los cambios de color ya integrados (ver más abajo).
 
 ## Arrancar en local
 
@@ -96,6 +96,8 @@ Todos los valores tienen un valor por defecto y se pueden cambiar con variables 
 | `MAX_JOBS` | `200` | Trabajos simultáneos como máximo (se borran los más antiguos) |
 | `MAX_CONCURRENT` | `0` (= nº de CPU) | Conversiones simultáneas |
 | `FILAMENTS_FILE` | *(vacío)* | Fichero YAML con tu biblioteca de filamentos |
+| `PROFILES_DIR` | *(vacío)* | Directorio con perfiles de laminador propios para el proyecto 3MF |
+| `DEFAULT_PROFILE` | `anycubic-kobra3-0.4` | Perfil seleccionado por defecto |
 
 No hay base de datos. Cada imagen subida se guarda en `TEMP_DIR/<id>/` y el resultado se mantiene en memoria. Una tarea periódica borra los trabajos caducados.
 
@@ -114,17 +116,45 @@ En docker-compose, descomenta `FILAMENTS_FILE` y el volumen `./filamentos.yml:/c
 
 ## Cómo usar el resultado en el laminador
 
+### Opción recomendada: proyecto 3MF
+
+Un **STL solo guarda la forma**: al abrirlo, el laminador no sabe nada de colores ni de cambios. Por eso pic2filament genera también un **proyecto 3MF** en el formato de Bambu Studio, que también leen Anycubic Slicer Next y OrcaSlicer. El proyecto incluye:
+
+- la pieza centrada en la cama;
+- el perfil de la impresora con **primera capa y altura de capa** de pic2filament, **relleno al 100 %** (zig-zag) y altura de capa adaptativa desactivada;
+- los **colores** de los filamentos en las ranuras 1 a 4;
+- los **cambios de filamento** en su capa, de una de estas dos formas:
+  - **Automático**: cambio de herramienta a la ranura del filamento (`T1`, `T2`… con el **ACE Pro** de Anycubic, o cambio de **AMS** en Bambu). La vista previa del laminador muestra los colores. Carga los filamentos en las ranuras 1, 2, 3 y 4 en el mismo orden que en pic2filament.
+  - **Manual (pausa)**: la impresora se pausa (`M600` en la Kobra 3; pausa en Bambu) al empezar la capa del cambio y lo cambias a mano.
+
+Perfiles incluidos:
+
+| Perfil | Laminador | Comprobado |
+|---|---|---|
+| Anycubic Kobra 3 · boquilla 0,4 | Anycubic Slicer Next 2.0 | Laminado con su motor: `T1/T2/T3` o `M600` en las capas exactas |
+| Bambu Lab X1 Carbon · boquilla 0,4 | Bambu Studio 1.10 | Laminado con su motor: cambio de AMS o pausa en las capas exactas |
+
+En la interfaz, elige la impresora y el modo en «Descargas» y pulsa **Descargar proyecto 3MF**. Ábrelo con *Archivo → Abrir proyecto*, revisa en la vista previa que aparecen los cambios y lamina.
+
+#### Añadir tu impresora
+
+1. En tu laminador, deja seleccionados la impresora, un proceso de 0,08 mm y **4 filamentos** (aunque sean iguales).
+2. Guarda un proyecto cualquiera (*Archivo → Guardar proyecto como…*).
+3. Abre el `.3mf` como ZIP y copia `Metadata/project_settings.config` a tu directorio de perfiles con un nombre como `mi-impresora.json`.
+4. Opcional: añade al principio la clave `"pic2filament_nombre": "Mi impresora (Mi laminador)"` para el nombre que se muestra.
+5. Arranca con `PROFILES_DIR=/ruta/a/perfiles`. En docker-compose, monta el directorio y define la variable.
+
+### Opción manual: STL + tabla de cambios
+
 1. Importa el STL. La imagen queda hacia arriba y la pieza mide exactamente el ancho pedido.
 2. Configura **la misma altura de primera capa y de capa** que en pic2filament (por defecto 0,16 y 0,08 mm). Desactiva la altura de capa variable o adaptativa.
-3. Usa **relleno al 100 %**, o suficientes paredes para que la pieza sea maciza. Así cada capa es una lámina completa del filamento.
+3. Usa **relleno al 100 %**, o suficientes paredes para que la pieza sea maciza.
 4. Lamina y, en la vista previa, añade un cambio **al empezar cada capa** de la tabla:
-   - **Bambu Studio / OrcaSlicer**: mueve el deslizador vertical hasta la capa, pulsa con el botón derecho en el «+» y elige *Añadir pausa* (o *Cambiar filamento*).
-   - **PrusaSlicer**: mueve el deslizador hasta la capa y pulsa el «+» para añadir un cambio de color (M600), o con el botón derecho elige *Añadir pausa*.
-5. Comprueba que el número de capa y la Z que muestra el laminador coinciden con la tabla. Cuando la impresora se pare, cambia el filamento y continúa.
+   - **Anycubic Slicer Next / Bambu Studio / OrcaSlicer**: mueve el deslizador vertical hasta la capa, pulsa con el botón derecho en el «+» y elige *Añadir pausa* (o *Cambiar filamento*).
+   - **PrusaSlicer**: mueve el deslizador hasta la capa y pulsa el «+» para añadir un cambio de color (M600).
+5. Comprueba que el número de capa y la Z que muestra el laminador coinciden con la tabla.
 
 El `.txt` del ZIP repite estos pasos con los valores concretos de tu pieza.
-
-**3MF**: el fichero incluye los cambios de color como metadatos (`Metadata/Prusa_Slicer_custom_gcode_per_print_z.xml` y `Metadata/custom_gcode_per_layer.xml`), así que PrusaSlicer, OrcaSlicer y Bambu Studio pueden cargarlos sin introducirlos a mano. Revisa siempre que aparecen en la vista previa. Si no, añádelos a mano como se indica arriba.
 
 ## Cómo calibrar el TD de un filamento
 
@@ -156,7 +186,9 @@ POST /api/trabajos                          (multipart "imagen")      → {id, n
 POST /api/trabajos/{id}/colores?cantidad=4                            → colores detectados
 POST /api/trabajos/{id}/procesar            (JSON de ajustes)         → resultado (cambios, capas…)
 GET  /api/trabajos/{id}/vista/{modo}.png    simulacion|relieve|alturas|original
-GET  /api/trabajos/{id}/descarga.zip | descarga.stl | descarga.3mf
+GET  /api/trabajos/{id}/descarga.zip | descarga.stl
+GET  /api/trabajos/{id}/descarga.3mf?perfil=anycubic-kobra3-0.4&modo=automatico|manual
+GET  /api/perfiles                                                    → perfiles de laminador
 GET  /api/filamentos                                                  → biblioteca
 GET  /actuator/health
 ```
