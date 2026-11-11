@@ -70,3 +70,7 @@ build/
 *.heic
 ejemplo/IMG_*
 ejemplo/salida/IMG_*
+# Imágenes de prueba con derechos de terceros (solo en local)
+ejemplo/marin.jpg
+src/test/resources/ejemplo-marin.jpg
+ejemplo/salida/ejemplo-marin-*
