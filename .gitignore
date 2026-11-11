@@ -23,13 +23,13 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### Resultados generados (STL pesados) ###
+### Resultados generados (STL y 3MF pesados) ###
 *.stl
 *.3mf
-ejemplo/salida/*
-!ejemplo/salida/.gitkeep
-!ejemplo/salida/*.png
-!ejemplo/salida/*.txt
+
+### Carpeta de ejemplos: solo se versiona la imagen sintética ###
+ejemplo/*
+!ejemplo/ejemplo-sintetico.png
 
 ### STS ###
 .apt_generated
@@ -68,9 +68,5 @@ build/
 ### Fotos personales de prueba (nunca al repositorio) ###
 *.HEIC
 *.heic
-ejemplo/IMG_*
-ejemplo/salida/IMG_*
 # Imágenes de prueba con derechos de terceros (solo en local)
-ejemplo/marin.jpg
 src/test/resources/ejemplo-marin.jpg
-ejemplo/salida/ejemplo-marin-*

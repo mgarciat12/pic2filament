@@ -16,7 +16,7 @@ Decisiones tomadas sin supervisión, con el motivo de cada una.
 ## Imagen de ejemplo
 - **No existía la carpeta `ejemplo/`**. Generé una imagen sintética, `ejemplo/ejemplo-sintetico.png` (640×480, con cielo degradado, sol, montañas, suelo, texto y una barra de grises), y la copié a `src/test/resources`.
 - La prueba de extremo a extremo (`EndToEndIT`) procesa **todas** las imágenes `ejemplo*.png|jpg|webp` de `src/test/resources`. Si añades tus imágenes ahí, se procesarán y sus resultados aparecerán en `ejemplo/salida/`.
-- `ejemplo/salida/*.stl` está en `.gitignore` porque pesa unos 12 MB. La vista previa y el `.txt` sí se versionan.
+- De la carpeta `ejemplo/` solo se versiona `ejemplo-sintetico.png`. Todo lo demás (tus fotos e imágenes y toda la carpeta `salida/`) se queda en local. La vista previa que muestra el README está en `docs/ejemplo-vista-previa.png`.
 
 ## Algoritmo
 - **Rejilla**: cada píxel de la rejilla es un vértice de la malla. Tiene `round(ancho/detalle)+1` columnas (401 con los valores por defecto), así que la pieza mide exactamente el ancho pedido. Si un lado supera 600, se reduce el detalle y se mantiene el ancho.

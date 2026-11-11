@@ -6,9 +6,9 @@ La pieza se imprime tumbada con un solo extrusor. La altura de cada punto decide
 
 ![Captura de pic2filament](docs/captura.png)
 
-Vista previa generada con la imagen de ejemplo y 4 filamentos (negro, rojo, azul cielo y blanco). Los resultados completos están en [`ejemplo/salida/`](ejemplo/salida/):
+Vista previa generada con la imagen de ejemplo y 4 filamentos (negro, rojo, azul cielo y blanco). Al ejecutar `./mvnw verify`, los resultados completos (STL, 3MF, vista previa e instrucciones) se generan en `ejemplo/salida/`, que no se versiona:
 
-![Vista previa de ejemplo](ejemplo/salida/ejemplo-sintetico-vista-previa.png)
+![Vista previa de ejemplo](docs/ejemplo-vista-previa.png)
 
 ## Qué hace
 
