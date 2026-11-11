@@ -64,3 +64,9 @@ build/
 
 ### Local env ###
 .env
+
+### Fotos personales de prueba (nunca al repositorio) ###
+*.HEIC
+*.heic
+ejemplo/IMG_*
+ejemplo/salida/IMG_*
