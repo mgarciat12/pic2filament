@@ -32,7 +32,11 @@ APP_PORT=9090 docker compose up -d --build       # otro puerto
 - Resultados del ejemplo en `ejemplo/salida/`: `ejemplo-sintetico.stl`, `-vista-previa.png` y `-cambios.txt`.
 
 ## Pendiente o para revisar
-- **Imagen de ejemplo**: no había ninguna en `ejemplo/`, así que usé una sintética. Copia tus imágenes a `src/test/resources/ejemplo-*.png|jpg` y ejecuta `./mvnw verify`: se procesarán y sus resultados irán a `ejemplo/salida/`.
+- **Imágenes de ejemplo**: al principio no había ninguna y usé una sintética. Después añadiste `ejemplo/marin.jpg`, que copié a `src/test/resources/ejemplo-marin.jpg`. `./mvnw verify` la procesa en verde (STL estanco de 100×100 mm, 16 MB) y deja los resultados en `ejemplo/salida/ejemplo-marin*`.
+  - Con los filamentos fijos de la prueba (negro, rojo, azul cielo y blanco), la vista previa sale casi en grises, porque esos colores no encajan con la imagen.
+  - Con «Detectar colores» sale bastante plana: los colores detectados son tonos medios apagados y el optimizador agrupa los cambios en las capas 5–7.
+  - Con negro, rojo, amarillo y blanco de la biblioteca sale mejor: pelo crema, ojos rojos y jersey negro, con cambios en las capas 5, 8 y 19.
+  - **La imagen `marin.jpg` no está en ningún commit**: es una ilustración de un personaje con derechos de autor y el repositorio va a ser público. Decide tú si la subes.
 - **3MF**: hay que probar en Bambu Studio, OrcaSlicer y PrusaSlicer que se reconocen los cambios integrados.
 - **TD de la biblioteca**: son valores aproximados. Mide los tuyos.
 - **Workflow de CI**: no se ha ejecutado en GitHub porque no he hecho push.
