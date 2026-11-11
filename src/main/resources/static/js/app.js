@@ -7,7 +7,8 @@
     var BASE = app.dataset.base.replace(/\/$/, '');
     var MAX_SUBIDA = parseInt(app.dataset.maxSubida, 10);
     var MAX_SUBIDA_TEXTO = app.dataset.maxSubidaTexto;
-    var TIPOS = ['image/png', 'image/jpeg', 'image/webp'];
+    var TIPOS = ['image/png', 'image/jpeg', 'image/webp', 'image/heic', 'image/heif'];
+    var EXTENSIONES = /\.(png|jpe?g|webp|heic|heif)$/i;
     var FILAMENTOS_POR_DEFECTO = ['Negro', 'Gris oscuro', 'Gris claro', 'Blanco'];
 
     var $ = function (sel, raiz) { return (raiz || document).querySelector(sel); };
@@ -194,8 +195,9 @@
 
     function subir(fichero) {
         if (!fichero) { return; }
-        if (TIPOS.indexOf(fichero.type) < 0) {
-            alerta('Formato no admitido. Sube una imagen PNG, JPG o WebP.');
+        // Algunos navegadores no informan del tipo de las fotos HEIC: se acepta también por extensión.
+        if (TIPOS.indexOf(fichero.type) < 0 && !EXTENSIONES.test(fichero.name || '')) {
+            alerta('Formato no admitido. Sube una imagen PNG, JPG, WebP o HEIC.');
             return;
         }
         if (fichero.size > MAX_SUBIDA) {

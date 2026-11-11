@@ -21,9 +21,9 @@
                             <span class="d-block fs-4 mb-1" aria-hidden="true">⇪</span>
                             <span class="d-block fw-semibold">Arrastra una imagen aquí o pulsa para elegirla</span>
                             <span class="d-block small text-body-secondary">También puedes pegarla con Ctrl+V / ⌘V</span>
-                            <span class="d-block small text-body-secondary">PNG, JPG o WebP · máx. <span th:text="${maxSubida}">15 MB</span></span>
+                            <span class="d-block small text-body-secondary">PNG, JPG, WebP o HEIC · máx. <span th:text="${maxSubida}">15 MB</span></span>
                         </label>
-                        <input type="file" id="imagen" class="visually-hidden" accept="image/png,image/jpeg,image/webp">
+                        <input type="file" id="imagen" class="visually-hidden" accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif">
                         <div id="info-imagen" class="small mt-2 text-body-secondary d-none"></div>
                     </div>
                 </section>
