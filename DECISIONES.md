@@ -8,6 +8,14 @@ Decisiones tomadas sin supervisión, con el motivo de cada una.
 - **Bootstrap 5.3.8** (WebJar): es la última versión publicada como WebJar. Se sirve en local con `webjars-locator-lite`, y las URLs incluyen la versión para invalidar la caché.
 - **Maven Wrapper 3.3.4** con Maven 3.9.14 (`only-script`).
 - **Lectura de WebP**: ImageIO no lee WebP, así que añadí TwelveMonkeys `imageio-webp` 3.15.3 (Java puro).
+- **Lectura de HEIC/HEIF** (11/11/2026): no hay un decodificador HEVC en Java puro que sea fiable, así que la foto se convierte a PNG con una herramienta externa:
+  - Se usa `heif-dec` o `heif-convert` (libheif) o `sips` (macOS), el primero que esté instalado. El comando se puede cambiar con `HEIF_COMMAND`.
+  - En la imagen Docker se añade `libheif-tools`: unos 10 MB más.
+  - El formato se detecta por el contenido (caja `ftyp` con marca HEIF), no por la extensión ni el tipo MIME, porque muchos navegadores envían las fotos HEIC como `application/octet-stream`. AVIF queda fuera.
+  - La conversión se hace en un directorio temporal que se borra siempre, con 60 s de tiempo máximo.
+  - El límite de tamaño se aplica al HEIC subido; el límite de megapíxeles, al PNG resultante.
+  - libheif y `sips` aplican la rotación de la foto, así que no sale girada.
+  - Si no hay conversor, el error 415 lo explica y sugiere convertirla a JPG.
 
 ## Convenciones
 - El encargo dejaba sin rellenar el nombre del repositorio de referencia («[NOMBRE DE OTRO REPO MÍO]»). Encontré `~/Documents/Proyectos/pixedpub` (Spring Boot 4.1.2, mvnw, Docker) y **copié sus convenciones**: estructura del pom, Dockerfile multietapa con capas extraídas y `JarLauncher`, JRE Alpine, healthcheck con `wget`, compose con `restart: unless-stopped`, `.gitattributes` y `.dockerignore`.

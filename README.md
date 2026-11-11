@@ -12,7 +12,7 @@ Vista previa generada con la imagen de ejemplo y 4 filamentos (negro, rojo, azul
 
 ## Qué hace
 
-1. **Subida de imagen**: PNG, JPG o WebP. Puedes arrastrarla, elegirla o pegarla con Ctrl+V. El límite es configurable (15 MB por defecto) y la transparencia se aplana sobre blanco.
+1. **Subida de imagen**: PNG, JPG, WebP o **HEIC/HEIF** (las fotos del iPhone). Puedes arrastrarla, elegirla o pegarla con Ctrl+V. El límite es configurable (15 MB por defecto) y la transparencia se aplana sobre blanco.
 2. **Ajustes**:
    - Tamaño: ancho en mm y detalle en mm por píxel. La rejilla se limita a 600×600.
    - Capas: altura de capa, altura de la primera capa, capas de base y capas totales.
@@ -32,7 +32,7 @@ Vista previa generada con la imagen de ejemplo y 4 filamentos (negro, rojo, azul
 
 ### Con Maven Wrapper
 
-Requiere Java 25.
+Requiere Java 25. Para subir fotos **HEIC** hace falta un conversor: en macOS se usa `sips` (viene con el sistema); en Linux, instala libheif (`apt install libheif-examples` o `apk add libheif-tools`). La imagen Docker ya lo incluye.
 
 ```bash
 ./mvnw spring-boot:run
@@ -98,6 +98,7 @@ Todos los valores tienen un valor por defecto y se pueden cambiar con variables 
 | `FILAMENTS_FILE` | *(vacío)* | Fichero YAML con tu biblioteca de filamentos |
 | `PROFILES_DIR` | *(vacío)* | Directorio con perfiles de laminador propios para el proyecto 3MF |
 | `DEFAULT_PROFILE` | `anycubic-kobra3-0.4` | Perfil seleccionado por defecto |
+| `HEIF_COMMAND` | *(vacío = automático)* | Conversor de HEIC a PNG. Por defecto usa `heif-dec`, `heif-convert` o `sips`, el primero que encuentre. Puedes poner otro comando con `{entrada}` y `{salida}`, o `no` para desactivar HEIC |
 
 No hay base de datos. Cada imagen subida se guarda en `TEMP_DIR/<id>/` y el resultado se mantiene en memoria. Una tarea periódica borra los trabajos caducados.
 

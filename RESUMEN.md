@@ -6,7 +6,7 @@ Todo lo pedido está hecho, también las dos funciones opcionales (3MF con cambi
 
 ### Hecho
 - Núcleo en Java puro (`com.pic2filament.core`): color (sRGB/lineal/Lab D65), simulación de la pila, asignación de alturas, mediana 3×3, optimizador de cambios, k-means en Lab, malla estanca, STL binario, 3MF, ZIP, instrucciones para el laminador y vistas previas (simulación, relieve, alturas y original).
-- Servicios: almacén de trabajos con ficheros temporales y limpieza automática, carga segura de imágenes (PNG/JPG/WebP, límite de tamaño y de megapíxeles) y biblioteca de filamentos en YAML editable.
+- Servicios: almacén de trabajos con ficheros temporales y limpieza automática, carga segura de imágenes (PNG/JPG/WebP/HEIC, límite de tamaño y de megapíxeles) y biblioteca de filamentos en YAML editable.
 - Web: API REST, página Thymeleaf + Bootstrap 5.3.8 en local (sin CDN), interfaz en español, adaptable a móvil, con tema claro y oscuro, arrastrar, elegir o pegar imagen, vista previa sin recarga, pila de capas, tabla de cambios y descargas (ZIP, STL y 3MF).
 - Errores: JSON coherente con mensajes en español para la API y página `error.html` para el navegador.
 - Docker multietapa (JRE 25 Alpine, usuario no root, HEALTHCHECK), docker-compose (puerto `APP_PORT`, `restart: unless-stopped`, 1 GB), workflow de GitHub Actions, README, DECISIONES.
@@ -24,6 +24,11 @@ Todo lo pedido está hecho, también las dos funciones opcionales (3MF con cambi
 
   En todos los casos: 28 capas de 0,16 + 0,08 mm, relleno al 100 % y los 4 colores.
 - Los 3MF de prueba están en `ejemplo/salida/*.3mf`.
+
+## Actualización 11/11/2026: fotos HEIC
+- Ya se pueden subir **fotos HEIC/HEIF** del iPhone sin convertirlas antes. El servidor las pasa a PNG con libheif (incluido en la imagen Docker) o con `sips` en macOS.
+- Comprobado en el contenedor con tu foto familiar `IMG_8135.HEIC`: se sube en unos 3 s, la orientación es correcta y el resultado es idéntico al de la prueba anterior (STL de 19,9 MB).
+- Hay una foto HEIC sintética de prueba (`src/test/resources/ejemplo-sintetico.heic`). El CI instala libheif y comprueba también que el contenedor acepta HEIC.
 
 ## Cómo arrancarlo
 ```bash
