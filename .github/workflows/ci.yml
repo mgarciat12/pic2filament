@@ -20,6 +20,9 @@ jobs:
           java-version: '25'
           cache: maven
 
+      - name: Instalar libheif (pruebas de HEIC)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libheif-examples
+
       - name: Pruebas (mvn verify)
         run: ./mvnw -B verify
 
@@ -30,7 +33,13 @@ jobs:
         run: |
           docker run -d --name pic2filament -p 8080:8080 pic2filament:${{ github.sha }}
           for i in $(seq 1 30); do
-            if curl -fs http://localhost:8080/actuator/health | grep -q UP; then echo "OK"; exit 0; fi
+            if curl -fs http://localhost:8080/actuator/health | grep -q UP; then
+              echo "OK"
+              # La imagen debe leer fotos HEIC (libheif dentro del contenedor)
+              curl -fs -F "imagen=@src/test/resources/ejemplo-sintetico.heic" http://localhost:8080/api/trabajos | grep -q '"ancho":640'
+              echo "HEIC OK"
+              exit 0
+            fi
             sleep 2
           done
           docker logs pic2filament
