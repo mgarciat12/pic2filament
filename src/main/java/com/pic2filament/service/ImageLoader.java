@@ -19,8 +19,9 @@ import com.pic2filament.config.Pic2filamentProperties;
 import com.pic2filament.core.image.RgbImage;
 
 /**
- * Decodifica imágenes PNG, JPEG y WebP comprobando el contenido real (no la extensión), el tamaño
- * del fichero y las dimensiones antes de decodificar.
+ * Decodifica imágenes PNG, JPEG, WebP y HEIC/HEIF comprobando el contenido real (no la extensión),
+ * el tamaño del fichero y las dimensiones antes de decodificar. HEIC se convierte antes a PNG con
+ * {@link HeifConverter}.
  */
 @Component
 public class ImageLoader {
@@ -32,8 +33,10 @@ public class ImageLoader {
     private final int keepSide;
     private final long maxBytes;
     private final long maxPixels;
+    private final HeifConverter heif;
 
-    public ImageLoader(Pic2filamentProperties props) {
+    public ImageLoader(Pic2filamentProperties props, HeifConverter heif) {
+        this.heif = heif;
         this.keepSide = Math.max(1200, props.maxGrid() * 4);
         this.maxBytes = props.maxUploadSize().toBytes();
         this.maxPixels = props.maxImageMegapixels() * 1_000_000L;
@@ -45,6 +48,9 @@ public class ImageLoader {
         }
         if (data.length > maxBytes) {
             throw tooLarge(maxBytes);
+        }
+        if (HeifConverter.isHeif(data)) {
+            data = heif.toPng(data);
         }
         try (ImageInputStream in = ImageIO.createImageInputStream(new ByteArrayInputStream(data))) {
             Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
@@ -77,7 +83,7 @@ public class ImageLoader {
             throw e;
         } catch (IOException | RuntimeException e) {
             throw new Pic2filamentException(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-                    "No se ha podido leer la imagen: el fichero está dañado o no es PNG, JPG ni WebP.", e);
+                    "No se ha podido leer la imagen: el fichero está dañado o no es PNG, JPG, WebP ni HEIC.", e);
         }
     }
 
@@ -92,7 +98,7 @@ public class ImageLoader {
 
     static Pic2filamentException unsupported() {
         return new Pic2filamentException(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-                "Formato no admitido. Sube una imagen PNG, JPG o WebP.");
+                "Formato no admitido. Sube una imagen PNG, JPG, WebP o HEIC.");
     }
 
     public static Pic2filamentException tooLarge(long maxBytes) {

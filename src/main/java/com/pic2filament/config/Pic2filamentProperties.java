@@ -22,7 +22,8 @@ public record Pic2filamentProperties(
         @DefaultValue("0") int maxConcurrent,
         String filamentsFile,
         String profilesDir,
-        @DefaultValue("anycubic-kobra3-0.4") String defaultProfile) {
+        @DefaultValue("anycubic-kobra3-0.4") String defaultProfile,
+        String heifCommand) {
 
     public Path effectiveTempDir() {
         return tempDir != null ? tempDir : Path.of(System.getProperty("java.io.tmpdir"), "pic2filament");

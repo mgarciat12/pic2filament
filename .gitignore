@@ -68,5 +68,7 @@ build/
 ### Fotos personales de prueba (nunca al repositorio) ###
 *.HEIC
 *.heic
+# Excepción: foto sintética de prueba para el soporte de HEIC
+!src/test/resources/ejemplo-sintetico.heic
 # Imágenes de prueba con derechos de terceros (solo en local)
 src/test/resources/ejemplo-marin.jpg

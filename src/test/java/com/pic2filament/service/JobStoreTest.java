@@ -20,7 +20,7 @@ class JobStoreTest {
     Path tmp;
 
     Pic2filamentProperties props(Duration ttl, int maxJobs) {
-        return new Pic2filamentProperties(DataSize.ofMegabytes(15), 600, 60, 300, tmp, ttl, maxJobs, 0, null, null, null);
+        return new Pic2filamentProperties(DataSize.ofMegabytes(15), 600, 60, 300, tmp, ttl, maxJobs, 0, null, null, null, null);
     }
 
     @Test
@@ -84,7 +84,7 @@ class JobStoreTest {
                     td: 1.8
                 """);
         FilamentLibrary lib = new FilamentLibrary(new Pic2filamentProperties(DataSize.ofMegabytes(15), 600, 60, 300,
-                tmp, Duration.ofHours(1), 2, 0, f.toString(), null, null));
+                tmp, Duration.ofHours(1), 2, 0, f.toString(), null, null, null));
         assertThat(lib.all()).containsExactly(new LibraryFilament("Mi verde", "#00aa00", 1.8));
     }
 

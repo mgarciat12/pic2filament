@@ -65,6 +65,9 @@ pic2filament:
   profiles-dir: ${PROFILES_DIR:}
   # Perfil seleccionado por defecto en la interfaz.
   default-profile: ${DEFAULT_PROFILE:anycubic-kobra3-0.4}
+  # Conversor de HEIC/HEIF a PNG (vacío = detectar heif-dec, heif-convert o sips).
+  # "{entrada}" y "{salida}" se sustituyen por las rutas; "no" desactiva HEIC.
+  heif-command: ${HEIF_COMMAND:}
 
 logging:
   level:

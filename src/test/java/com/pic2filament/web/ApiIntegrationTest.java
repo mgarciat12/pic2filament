@@ -186,12 +186,29 @@ class ApiIntegrationTest {
         assertThat(img.getRGB(3, 3) & 0xffffff).isEqualTo(0xffffff);
     }
 
+    @Autowired
+    com.pic2filament.service.HeifConverter heif;
+
+    @Test
+    void aceptaFotosHeic() throws Exception {
+        org.junit.jupiter.api.Assumptions.assumeTrue(heif.available(), "no hay conversor de HEIC");
+        byte[] heic = java.nio.file.Files.readAllBytes(java.nio.file.Path.of("src/test/resources/ejemplo-sintetico.heic"));
+        // Algunos navegadores envían las fotos HEIC como application/octet-stream: cuenta el contenido.
+        String id = upload(heic, "foto.HEIC", "application/octet-stream");
+        mvc.perform(post("/api/trabajos/{id}/colores", id)).andExpect(status().isOk());
+        mvc.perform(post("/api/trabajos/{id}/procesar", id).contentType(MediaType.APPLICATION_JSON).content(SETTINGS))
+                .andExpect(status().isOk());
+        byte[] png = mvc.perform(get("/api/trabajos/{id}/vista/original.png", id)).andReturn().getResponse()
+                .getContentAsByteArray();
+        assertThat(ImageIO.read(new ByteArrayInputStream(png)).getWidth()).isGreaterThan(0);
+    }
+
     @Test
     void rechazaFicherosNoValidos() throws Exception {
         mvc.perform(multipart("/api/trabajos").file(
                 new MockMultipartFile("imagen", "falsa.png", "image/png", "esto no es una imagen".getBytes())))
                 .andExpect(status().isUnsupportedMediaType())
-                .andExpect(jsonPath("$.mensaje").value("Formato no admitido. Sube una imagen PNG, JPG o WebP."));
+                .andExpect(jsonPath("$.mensaje").value("Formato no admitido. Sube una imagen PNG, JPG, WebP o HEIC."));
 
         ByteArrayOutputStream gif = new ByteArrayOutputStream();
         ImageIO.write(TestImages.gradient(10, 10), "gif", gif);
